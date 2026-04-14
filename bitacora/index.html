@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bitácora Web – Clan Jabalí</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:        #0e0b07;
+      --parchment: #d9c99a;
+      --parch-dark:#b5a06a;
+      --gold:      #c9a227;
+      --gold-light:#f0d060;
+      --rust:      #7a2e0e;
+      --bone:      #e8dfc0;
+      --ink:       #1a1208;
+      --border:    #5a3e1b;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--bone);
+      font-family: 'IM Fell English', serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── NOISE TEXTURE overlay ─── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; pointer-events: none; z-index: 999;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+      opacity: 0.35;
+    }
+
+    /* ═══════════ HEADER ═══════════ */
+    header {
+      position: relative;
+      width: 100%;
+      background: linear-gradient(180deg, #1a1005 0%, #0e0b07 100%);
+      border-bottom: 3px solid var(--gold);
+      padding: 0 0 24px;
+      overflow: hidden;
+    }
+
+    header::after {
+      content: '';
+      position: absolute; bottom: -1px; left: 0; right: 0; height: 6px;
+      background: repeating-linear-gradient(90deg, var(--gold) 0 8px, transparent 8px 14px);
+    }
+
+    /* ── LOGO ── */
+    .logo-wrap {
+      display: flex;
+      justify-content: center;
+      padding: 20px 0 0;
+    }
+    .logo-wrap img {
+      width: 88px;
+      height: 88px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 14px rgba(201,162,39,.55));
+    }
+    .instruction-tag {
+      display: none;
+    }
+
+    /* ── CLAN NAME ── */
+    .clan-title-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 22px 20px 0;
+      gap: 6px;
+    }
+    .clan-emblem-divider {
+      display: flex; align-items: center; gap: 14px; width: 100%; max-width: 700px;
+    }
+    .clan-emblem-divider::before,
+    .clan-emblem-divider::after {
+      content: '';
+      flex: 1; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+    .skull-icon { font-size: 1.3rem; }
+    .clan-name {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(2rem, 6vw, 3.8rem);
+      color: var(--gold);
+      text-align: center;
+      text-shadow: 0 0 30px rgba(201,162,39,.45), 0 2px 0 #3d2800;
+      letter-spacing: .06em;
+      line-height: 1.1;
+    }
+    .clan-subtitle {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(.7rem, 2vw, 1rem);
+      color: var(--parch-dark);
+      letter-spacing: .35em;
+      text-transform: uppercase;
+    }
+
+    /* ═══════════ MAIN ═══════════ */
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    /* ── page title ── */
+    .page-title-wrap {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .page-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(1.6rem, 5vw, 3rem);
+      color: var(--bone);
+      letter-spacing: .08em;
+      text-shadow: 0 0 20px rgba(201,162,39,.3);
+    }
+    .page-title span { color: var(--gold); }
+    .title-rule {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 16px auto 0;
+      max-width: 500px;
+    }
+
+    /* ── INTRO BOX ── */
+    .intro-box {
+      background: rgba(201,162,39,.06);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--gold);
+      padding: 20px 24px;
+      border-radius: 2px;
+      margin-bottom: 40px;
+      position: relative;
+    }
+    .intro-box p { line-height: 1.75; font-size: 1.05rem; color: var(--parchment); }
+    .intro-box strong { color: var(--gold-light); font-style: italic; }
+    /* ━━━ INSTRUCCIÓN ━━━ */
+    .edit-note {
+      display: block;
+      margin-top: 12px;
+      font-family: monospace;
+      font-size: .75rem;
+      color: var(--rust);
+      background: rgba(122,46,14,.12);
+      border: 1px dashed var(--rust);
+      padding: 6px 10px;
+      border-radius: 3px;
+    }
+
+    /* ── SECTION CARDS ── */
+    .section-card {
+      background: linear-gradient(160deg, #1a1208 0%, #120d06 100%);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      margin-bottom: 32px;
+      overflow: hidden;
+      position: relative;
+    }
+    .section-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--rust), var(--gold), var(--rust));
+    }
+
+    .card-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      background: rgba(201,162,39,.04);
+      transition: background .2s;
+    }
+    .card-header:hover { background: rgba(201,162,39,.09); }
+    .card-num {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1.5rem;
+      color: var(--gold);
+      min-width: 40px;
+      text-shadow: 0 0 12px rgba(201,162,39,.5);
+    }
+    .card-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      color: var(--bone);
+      letter-spacing: .06em;
+      flex: 1;
+    }
+    .card-chevron {
+      font-size: 1rem; color: var(--gold);
+      transition: transform .3s;
+    }
+    .section-card.open .card-chevron { transform: rotate(180deg); }
+
+    .card-body {
+      padding: 0 24px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .45s ease, padding .3s;
+    }
+    .section-card.open .card-body {
+      max-height: 2000px;
+      padding: 20px 24px 24px;
+    }
+
+    /* sub-items */
+    .sub-list { list-style: none; }
+    .sub-list li {
+      position: relative;
+      padding: 7px 0 7px 24px;
+      border-bottom: 1px solid rgba(90,62,27,.3);
+      color: var(--parchment);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    .sub-list li:last-child { border-bottom: none; }
+    .sub-list li::before {
+      content: '⚔';
+      position: absolute; left: 0; top: 7px;
+      color: var(--gold); font-size: .8rem;
+    }
+    .sub-list li em { color: var(--gold-light); font-style: italic; }
+    .sub-list li strong { color: var(--bone); font-style: normal; }
+
+    .sub-sub-list { list-style: none; margin: 8px 0 4px 16px; }
+    .sub-sub-list li {
+      padding: 5px 0 5px 20px;
+      border-bottom: none;
+      color: var(--parch-dark);
+      font-size: .95rem;
+    }
+    .sub-sub-list li::before { content: '›'; color: var(--parch-dark); font-size: 1.1rem; }
+
+    .note-box {
+      background: rgba(201,162,39,.08);
+      border-left: 3px solid var(--gold);
+      padding: 10px 16px;
+      margin: 12px 0;
+      font-size: .9rem;
+      color: var(--parch-dark);
+      font-style: italic;
+    }
+    .note-box strong { color: var(--gold-light); font-style: normal; }
+
+    /* ── MEMBER CARDS ── */
+    .members-grid {
+      display: flex;
+      gap: 18px;
+      margin: 16px 0 8px;
+      flex-wrap: wrap;
+    }
+    .member-card {
+      flex: 1;
+      min-width: 140px;
+      max-width: 200px;
+      background: rgba(201,162,39,.05);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: border-color .2s;
+    }
+    .member-card:hover { border-color: var(--gold); }
+    .member-photo-wrap {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0e0b07;
+      overflow: hidden;
+    }
+    .member-photo-wrap input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .member-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      pointer-events: none;
+    }
+    .ph-icon { font-size: 2.4rem; opacity: .35; }
+    .ph-text {
+      font-family: 'Cinzel', serif;
+      font-size: .65rem;
+      color: var(--border);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .member-img {
+  width: 100%; 
+  height: 100%;
+  object-fit: cover;
+  object-position: center top; /* 👈 ESTA ES LA QUE TE FALTABA */
+  position: absolute; 
+  inset: 0;
+}
+    .member-info {
+      padding: 12px 10px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 100%;
+    }
+    .member-name {
+      font-family: 'Cinzel', serif;
+      font-size: .85rem;
+      color: var(--bone);
+      font-weight: 600;
+      outline: none;
+      border-bottom: 1px dashed transparent;
+      transition: border-color .2s;
+    }
+    .member-name:focus { border-bottom-color: var(--gold); }
+    .member-age {
+      font-family: 'IM Fell English', serif;
+      font-size: .8rem;
+      color: var(--parch-dark);
+      outline: none;
+      border-bottom: 1px dashed transparent;
+      transition: border-color .2s;
+    }
+    .member-age:focus { border-bottom-color: var(--gold); }
+    @media (max-width: 480px) {
+      .members-grid { flex-direction: column; align-items: center; }
+      .member-card { max-width: 100%; width: 100%; }
+    }
+
+    /* ── SUB-HEADINGS ── */
+    .sub-heading {
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+      font-size: .92rem;
+      margin: 20px 0 8px;
+      letter-spacing: .06em;
+      border-bottom: 1px solid rgba(201,162,39,.2);
+      padding-bottom: 4px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 2px solid var(--border);
+      text-align: center;
+      padding: 28px 20px;
+      font-family: 'Cinzel', serif;
+      font-size: .75rem;
+      color: var(--border);
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+    footer span { color: var(--gold); }
+
+    /* ── responsive ── */
+    @media (max-width: 600px) {
+      .card-num { font-size: 1.1rem; min-width: 28px; }
+      .card-title { font-size: .9rem; }
+    }
+    .perfil-img {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  display: block;
+  margin: 16px auto;
+  border: 2px solid var(--gold);
+  border-radius: 6px;
+  background: #fff;
+  padding: 6px;
+}
+.galeria-inmersion {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.galeria-inmersion img {
+  width: 100%;
+  max-width: 260px;
+  height: 180px;
+  object-fit: cover;
+  border: 2px solid var(--gold);
+  border-radius: 6px;
+  padding: 4px;
+  background: #fff;
+  transition: all 0.3s ease;
+}
+
+/* efecto hover 🔥 */
+.galeria-inmersion img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(201,162,39,0.6);
+}
+.btn-medieval {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 18px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  color: var(--gold);
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  border: 1px solid var(--gold);
+  background: linear-gradient(145deg, #1a1208, #0e0b07);
+  border-radius: 4px;
+  box-shadow: 0 0 8px rgba(201,162,39,0.2);
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+/* efecto hover 🔥 */
+.btn-medieval:hover {
+  color: var(--gold-light);
+  border-color: var(--gold-light);
+  box-shadow: 0 0 12px rgba(201,162,39,0.6);
+  transform: translateY(-2px);
+}
+
+/* línea decorativa */
+.btn-medieval::before {
+  content: '⚔';
+  margin-right: 8px;
+  font-size: 0.8rem;
+}
+.footer-link {
+  display: inline-block;
+  margin-top: 16px;
+
+  font-family: 'Cinzel', serif;
+  font-size: .72rem;
+  color: var(--border);
+  text-decoration: none;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+
+  transition: all .2s ease;
+}
+
+/* efecto hover 🔥 */
+.footer-link:hover {
+  color: var(--gold);
+  transform: translateY(-2px);
+}
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ HEADER ═══════════════ -->
+<header>
+
+  <!-- ESCUDO / LOGO -->
+  <div class="logo-wrap"> <img src="img/Escudo de Clan Jabalí.png" alt="escudo">
+  </div>
+
+  <!-- NOMBRE DEL CLAN -->
+  <div class="clan-title-wrap">
+    <div class="clan-emblem-divider"><span class="skull-icon">💀</span></div>
+    <!-- ━━━ INSTRUCCIÓN 2: cambia el nombre si lo necesitas ━━━ -->
+    <h1 class="clan-name">Clan Jabalí</h1>
+    <!-- fin instrucción 2 -->
+    <p class="clan-subtitle">Bitácora Web &nbsp;·&nbsp; Diseño de Experiencias</p>
+    <div class="clan-emblem-divider"><span class="skull-icon">💀</span></div>
+  </div>
+
+</header>
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<main>
+
+  <div class="page-title-wrap">
+    <h2 class="page-title"><span>Contenido</span> Bitácora Web</h2>
+    <div class="title-rule"></div>
+  </div>
+
+  <!-- ═══ SECCIÓN 1: PÁGINA PRINCIPAL ═══ -->
+  <div class="section-card open">
+    <div class="card-header" onclick="toggle(this)">
+      <span class="card-num">1</span>
+      <span class="card-title">Página Principal</span>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      
+      <ul class="sub-list">
+        <li>
+          <strong>1.1 Desafío de diseño</strong>
+          <ul class="sub-sub-list"><li>¿Cómo podríamos mejorar el proceso de integración
+social de los estudiantes nuevos a la vida universitaria?</li></ul>
+        </li>
+        <li>
+          <strong>1.2 Descripción de la problemática</strong>
+          <ul class="sub-sub-list"><li>La dificultad de los estudiantes de los nuevos estudiantes para hacer amigos y sentirse cómodos con el entorno</li></ul>
+        </li>
+        <li>
+          <strong>1.3 Integrantes del equipo con un breve perfil y foto de cada uno</strong>
+          <div class="members-grid">
+
+            <!-- ── INTEGRANTE 1 ── cambia nombre, edad y foto -->
+            <div class="member-card">
+              <label class="member-photo-wrap" title="Haz clic para subir foto">
+                
+                <img class="member-img" src="img/daniel.jpeg" alt="" style="display:none"/>
+                <img class="member-img" src="img/daniel.jpeg" alt="Daniel">
+
+<div class="member-placeholder" style="display:none;">
+  <span class="ph-icon">👤</span>
+  <span class="ph-text">Subir foto</span>
+</div>
+              </label>
+              <div class="member-info">
+                <!-- 📌 Cambia el nombre aquí -->
+                <span class="member-name" contenteditable="true">Daniel Avila</span>
+                <!-- 📌 Cambia la edad aquí -->
+                <span class="member-age" contenteditable="true">16</span>
+              </div>
+            </div>
+
+            <!-- ── INTEGRANTE 2 ── -->
+            <div class="member-card">
+              <label class="member-photo-wrap" title="Haz clic para subir foto">
+               
+                <img class="member-img" src="" alt="" style="display:none"/>
+                <img class="member-img" src="img/johan.jpeg" alt="Johan">
+
+<div class="member-placeholder" style="display:none;">
+  <span class="ph-icon">👤</span>
+  <span class="ph-text">Subir foto</span>
+</div>
+              </label>
+              <div class="member-info">
+                <span class="member-name" contenteditable="true">Johan Buitrago</span>
+                <span class="member-age" contenteditable="true">17</span>
+              </div>
+            </div>
+
+            <!-- ── INTEGRANTE 3 ── -->
+            <div class="member-card">
+              <label class="member-photo-wrap" title="Haz clic para subir foto">
+                
+                <img class="member-img" src="" alt="" style="display:none"/>
+                <img class="member-img" src="img/simon.jpeg" alt="Simon">
+
+<div class="member-placeholder" style="display:none;">
+  <span class="ph-icon">👤</span>
+  <span class="ph-text">Subir foto</span>
+</div>
+              </label>
+              <div class="member-info">
+                <span class="member-name" contenteditable="true">Simon Troncoso</span>
+                <span class="member-age" contenteditable="true">17</span>
+              </div>
+            </div>
+
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ═══ SECCIÓN 2: FASE DE INSPIRACIÓN ═══ -->
+  <div class="section-card">
+    <div class="card-header" onclick="toggle(this)">
+      <span class="card-num">2</span>
+      <span class="card-title">Fase de Inspiración</span>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body"> 
+
+      <!-- 2.1 Afectados -->
+      <p class="sub-heading">2.1 Afectados</p>
+      <ul class="sub-list">
+        <li>
+          <strong>2.1.1 Perfil <em>ficticio</em> de afectado</strong>
+          <ul class="sub-sub-list"><li> <img src="img/perfilafectado.jpeg" alt="perfil del afectado" class="perfil-img"></li></ul>
+        </li>
+        <li>
+  <strong>2.1.2 Guía de entrevistas a afectados</strong>
+  <ul class="sub-sub-list">
+    <li>
+      <a href="../bitacora/paginas_alternas/guia_entrevistas.html" class="btn-medieval">
+        Guía de Entrevistas – Afectados
+      </a>
+    </li>
+  </ul>
+</li>
+        </li>
+      </ul>
+
+      <!-- 2.2 Expertos -->
+      <p class="sub-heading">2.2 Expertos</p>
+      <ul class="sub-list">
+        <li>
+          <strong>2.2.1 Perfil <em>ficticio</em> de los expertos</strong>
+          <ul class="sub-sub-list"><li><img src="img/perfilexperto.jpg" alt="perfil del experto" class="perfil-img"></li></ul>
+        </li>
+        
+      </ul>
+
+      <!-- 2.3 Inmersión -->
+      <p class="sub-heading">2.3 Inmersión</p>
+      <ul class="sub-list">
+        <li>
+          <strong>2.3.1 Perfil de los lugares de inmersión</strong>
+          <ul class="sub-sub-list"><li>Espacios dentro de la universidad donde los estudiantes interactúan de manera informal antes, después o entre clases. Son áreas de alta circulación y encuentro espontáneo entre estudiantes de diferentes semestres y carreras.</li></ul>
+        </li>
+        <li>
+          <strong>2.3.2 Actividades de inmersión (fotografías)</strong>
+          <ul class="sub-sub-list"><li>
+            <li>
+  <div class="galeria-inmersion">
+    <img src="img/inmersion.jpeg" alt="inmersión1">
+    <img src="img/inmersion2.jpeg" alt="inmersión2">
+  </div>
+</li>
+          </li></ul>
+        </li>
+      
+      </ul>
+
+      <!-- 2.4 Inspiración -->
+      <ul class="sub-sub-list"><li><a href="../bitacora/paginas_alternas/demas_perfiles.html"    class="btn-medieval">Ver otros perfiles</a></li></ul>
+        </li>
+      </ul><div class="note-box">
+        <strong>*</strong> Publiquen las 5 historias de la presentación oral e incluyan qué aprendieron en cada una. Aquí pueden agregar perfiles reales, grabaciones, fotos y cualquier material de investigación que no alcanzaron a mostrar en la parte oral.
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ SECCIÓN 3: FASE DE IDEACIÓN ═══ -->
+  <div class="section-card">
+    <div class="card-header" onclick="toggle(this)">
+      <span class="card-num">3</span>
+      <span class="card-title">Fase de Ideación</span>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+
+      <p class="sub-heading">3.1 Ideas Centrales</p>
+       <ul class="sub-list">
+        <li>
+          <strong>3.1.1 Clúster 1 <p>Opciones de la universidad</p></strong>
+          <ul class="sub-sub-list">
+            <li>📌 Descripción del clúster</li>
+            <li>Insight 1: Aunque la universidad ofrece espacios de integración y socialización, el efecto de estos se ve mermado por horarios pre-establecidos, que dificultan la integración con otros compañeros y refuerzan el aislamiento.</li>
+            <li>¿Cómo podríamos mejorar los horarios que le que brinda la universidad a los estudiantes, para que generen integración entre ellos y no aislamiento?</li>
+          </ul>
+        </li>
+        <li>
+          <strong>3.1.2 Clúster 2 <p>Choque cultural</p></strong>
+          <ul class="sub-sub-list">
+            <li>📌 Descripción del clúster</li>
+            <li>Insight 2: Muchos estudiantes se sienten incómodos en la universidad, ya que no la perciben como un espacio seguro en el que se pueden mostrar como en realidad son; porque encuentran este entorno muy diferente al colegio, dónde ya tenían sus amistades.</li>
+            <li>¿Cómo podríamos hacer que nuestros afectados perciban a la universidad como un entorno igual de seguro al colegio?</li>
+          </ul>
+        </li>
+        <li>
+          <strong>3.1.3 Clúster 3 <p>Introversión</p></strong>
+          <ul class="sub-sub-list">
+            <li>📌 Descripción del clúster</li>
+            <li>Insight 3: Algunos estudiantes sufren para socializar y les gustaría poder formar relaciones sociales con otros sociales de forma en la que se sientan cómoda, y sea natural.</li>
+            <li>¿Cómo podríamos hacer que los estudiantes introvertidos que quieran socializar más con los demás estudiantes, lo hagan de forma en la que se sientan cómodos y sea de forma natural?</li>
+          </ul>
+        </li>
+      </ul>
+      <div class="note-box">
+        <strong>*</strong> Cada clúster debe tener su propia <strong>descripción</strong>, debe haber al menos un <em>insight</em> por clúster y una <em>oportunidad de diseño</em> por insight.
+      </div>
+
+      <p class="sub-heading">3.2 Lluvia de Ideas</p>
+      <ul class="sub-list">
+        <li>Fotografía de la lluvia de ideas <div class="galeria-inmersion"><img src="../bitacora/img/lluviadeide1.jpeg" alt="">
+<img src="../bitacora/img/lluviadeide2.jpeg" alt="">  <img src="../bitacora/img/lluviadeide3.jpeg" alt=""> <img src="../bitacora/img/lluviadeide4.jpeg" alt="">  </div>   <li><div class="perfil-img"><img src="./img/ideasyvot.png" alt=""></div></li>
+      </ul>
+
+      <p class="sub-heading">3.3 Formato de Prueba de Valor</p>
+      <ul class="sub-list">
+        <li>a) Incluye la <em>gran idea</em> seleccionada (que reúne y abarca a las ideas de la votación) <span class="edit-note" style="display:inline;margin-left:8px">📌 Escribe la gran idea aquí</span></li>
+        <li>b) Incluye la <em>base tecnológica</em> debidamente justificada <span class="edit-note" style="display:inline;margin-left:8px">📌 Justifica la tecnología aquí</span></li>
+      </ul>
+
+      <p class="sub-heading">3.4 Guión Gráfico</p>
+      <ul class="sub-list">
+        <li>Con al menos <strong>5 escenas</strong> además del afectado <span class="edit-note" style="display:inline;margin-left:8px">📌 Sube las imágenes del storyboard aquí</span></li>
+      </ul>
+
+    </div>
+  </div>
+
+</main>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <a class="footer-link" target="_blank" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1"><span>👀earter egg👀
+    ⚠️ TOP SECRET ⚠️
+  </span></a>
+  <br><br>
+  <span>Clan Jabalí</span> &nbsp;·&nbsp; Bitácora Web &nbsp;·&nbsp; Diseño de Experiencias
+</footer>
+
+<script>
+  // ── MEMBER PHOTO PREVIEW ──
+  function previewMember(input) {
+    if (!input.files[0]) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const wrap = input.closest('.member-photo-wrap');
+      const img = wrap.querySelector('.member-img');
+      const ph  = wrap.querySelector('.member-placeholder');
+      img.src = e.target.result;
+      img.style.display = 'block';
+      ph.style.display  = 'none';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+
+  // ── ACCORDION ──
+  function toggle(header) {
+    header.closest('.section-card').classList.toggle('open');
+  }
+
+
+</script>
+</body>
+</html>
