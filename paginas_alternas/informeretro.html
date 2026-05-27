@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Informe de Retroalimentación — Clan Jabalí</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --blood:      #8b1a1a;
+      --ember:      #c8501a;
+      --gold:       #c9922a;
+      --gold-light: #e8c060;
+      --parchment:  #d9c49a;
+      --bone:       #b8a880;
+      --dark:       #0d0a08;
+      --bark:       #1a1108;
+      --wood:       #2a1c0e;
+      --stone:      #1e1a14;
+      --iron:       #3a3530;
+      /* Section accent colors */
+      --good:    #2a6b3a;
+      --good-glow: rgba(42,107,58,0.25);
+      --bad:     #7a1a1a;
+      --bad-glow: rgba(122,26,26,0.25);
+      --unexpected: #2a4a7a;
+      --unexpected-glow: rgba(42,74,122,0.25);
+      --improve:  #6b4a1a;
+      --improve-glow: rgba(107,74,26,0.25);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--dark);
+      color: var(--parchment);
+      font-family: 'IM Fell English', serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='10' r='3' fill='%23c9922a'/%3E%3C/svg%3E") 10 10, auto;
+    }
+
+    /* Noise overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.35;
+    }
+
+    /* ══ HEADER ══ */
+    header {
+      position: relative;
+      width: 100%;
+      background: linear-gradient(180deg, #000 0%, var(--bark) 40%, var(--wood) 100%);
+      border-bottom: 3px solid var(--gold);
+      box-shadow: 0 4px 40px rgba(201,146,42,0.25), 0 0 80px rgba(139,26,26,0.3);
+      overflow: hidden;
+      padding-bottom: 2rem;
+    }
+
+    header::before {
+      content: '';
+      display: block;
+      height: 6px;
+      background: repeating-linear-gradient(90deg, var(--blood) 0px, var(--blood) 12px, var(--gold) 12px, var(--gold) 16px, var(--blood) 16px, var(--blood) 28px);
+    }
+
+    .header-glow {
+      position: absolute;
+      top: -40px; left: 50%;
+      transform: translateX(-50%);
+      width: 500px; height: 500px;
+      background: radial-gradient(ellipse, rgba(201,146,42,0.12) 0%, rgba(139,26,26,0.08) 40%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .header-inner {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2.5rem 2rem 0;
+      gap: 0.8rem;
+    }
+
+    .clan-name {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(1.4rem, 3.5vw, 2.6rem);
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      text-shadow:
+        0 0 30px rgba(201,146,42,0.8),
+        0 0 60px rgba(201,146,42,0.4),
+        3px 3px 0 var(--blood);
+      animation: flicker 6s ease-in-out infinite;
+    }
+
+    @keyframes flicker {
+      0%, 90%, 100% { opacity: 1; }
+      91% { opacity: 0.92; }
+      93% { opacity: 1; }
+    }
+
+    /* Page title (different from clan name) */
+    .page-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(1.6rem, 5vw, 3.2rem);
+      font-weight: 700;
+      color: var(--parchment);
+      text-align: center;
+      letter-spacing: 0.06em;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.8), 0 0 40px rgba(201,146,42,0.2);
+      margin-top: 0.3rem;
+    }
+
+    .ornament-divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      width: 100%;
+      max-width: 700px;
+      margin: 0.5rem auto;
+    }
+    .ornament-divider::before,
+    .ornament-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold) 50%, transparent);
+      opacity: 0.6;
+    }
+    .ornament-sym { font-family: 'Cinzel', serif; color: var(--gold); font-size: 1.2rem; opacity: 0.8; }
+
+    .page-subtitle {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(0.75rem, 2vw, 1rem);
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--bone);
+      opacity: 0.7;
+    }
+
+    /* ══ NAV ══ */
+    nav {
+      background: linear-gradient(180deg, var(--wood) 0%, #150f07 100%);
+      border-bottom: 2px solid rgba(201,146,42,0.3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.6);
+    }
+    nav ul { list-style: none; display: flex; justify-content: center; flex-wrap: wrap; }
+    nav ul li a {
+      display: block;
+      padding: 0.9rem 1.2rem;
+      font-family: 'Cinzel', serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--bone);
+      text-decoration: none;
+      position: relative;
+      transition: color 0.2s;
+    }
+    nav ul li a::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%) scaleX(0);
+      width: 80%; height: 2px;
+      background: var(--gold);
+      transition: transform 0.25s;
+    }
+    nav ul li a:hover { color: var(--gold-light); }
+    nav ul li a:hover::after { transform: translateX(-50%) scaleX(1); }
+
+    /* ══ MAIN ══ */
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 3rem 2rem 5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    /* ── Context block (¿Quién, qué, dónde?) ── */
+    .context-block {
+      background: linear-gradient(135deg, #150f07 0%, #1e140a 60%, #150f07 100%);
+      border: 1px solid rgba(201,146,42,0.35);
+      border-radius: 2px;
+      padding: 2rem 2.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .context-block::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold) 30%, var(--ember) 70%, transparent);
+    }
+
+    .context-block::after {
+      content: '?';
+      position: absolute;
+      right: 1.5rem; bottom: -0.5rem;
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 8rem;
+      color: rgba(201,146,42,0.05);
+      pointer-events: none;
+      line-height: 1;
+    }
+
+    .block-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .block-icon {
+      width: 46px; height: 46px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      background: rgba(201,146,42,0.1);
+      border: 1px solid rgba(201,146,42,0.3);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .block-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      font-weight: 700;
+      color: var(--gold-light);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Feedback sections ── */
+    .feedback-section {
+      border-radius: 2px;
+      border: 1px solid;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feedback-section.good    { border-color: rgba(42,107,58,0.4);  background: linear-gradient(135deg, #0a120c 0%, #0f1a10 100%); }
+    .feedback-section.bad     { border-color: rgba(122,26,26,0.4);  background: linear-gradient(135deg, #120808 0%, #1a0d0d 100%); }
+    .feedback-section.unexp   { border-color: rgba(42,74,122,0.4);  background: linear-gradient(135deg, #08100f 0%, #0d1520 100%); }
+    .feedback-section.improve { border-color: rgba(107,74,26,0.4);  background: linear-gradient(135deg, #120e06 0%, #1a1408 100%); }
+
+    /* Top accent line */
+    .feedback-section.good::before    { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #3a9b52, transparent); }
+    .feedback-section.bad::before     { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--blood), transparent); }
+    .feedback-section.unexp::before   { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #4a7abf, transparent); }
+    .feedback-section.improve::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+
+    .section-inner { padding: 2rem 2.5rem 2rem; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .section-icon-big {
+      font-size: 2.2rem;
+      line-height: 1;
+    }
+
+    .section-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: 0.25rem;
+    }
+
+    .good    .section-label { color: #5ab872; }
+    .bad     .section-label { color: #d06060; }
+    .unexp   .section-label { color: #7aabdf; }
+    .improve .section-label { color: var(--gold); }
+
+    .section-question {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(1rem, 2.5vw, 1.35rem);
+      font-weight: 700;
+      color: var(--parchment);
+    }
+
+    /* Items list */
+    .feedback-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .feedback-list li {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      font-family: 'IM Fell English', serif;
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--bone);
+      padding: 0.8rem 1rem;
+      background: rgba(0,0,0,0.2);
+      border-radius: 1px;
+      border-left: 3px solid;
+      transition: background 0.2s, transform 0.2s;
+      cursor: default;
+    }
+
+    .feedback-list li:hover {
+      background: rgba(255,255,255,0.04);
+      transform: translateX(4px);
+    }
+
+    .good    .feedback-list li { border-color: #3a9b52; }
+    .bad     .feedback-list li { border-color: var(--blood); }
+    .unexp   .feedback-list li { border-color: #4a7abf; }
+    .improve .feedback-list li { border-color: var(--gold); }
+
+    .li-bullet {
+      flex-shrink: 0;
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem;
+      margin-top: 2px;
+    }
+
+    /* Context list (quién/dónde) */
+    .context-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .context-list li {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      font-family: 'IM Fell English', serif;
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--bone);
+      padding: 0.8rem 1rem;
+      background: rgba(0,0,0,0.25);
+      border-left: 3px solid rgba(201,146,42,0.5);
+      border-radius: 1px;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .context-list li:hover {
+      background: rgba(201,146,42,0.05);
+      transform: translateX(4px);
+    }
+
+    .context-list .li-bullet { color: var(--gold); font-size: 1rem; }
+
+    /* ── Scroll reveal ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Corner ornaments ── */
+    .corner-tl, .corner-br {
+      position: absolute;
+      width: 18px; height: 18px;
+      pointer-events: none;
+    }
+    .corner-tl { top: 8px; left: 8px; border-top: 2px solid var(--gold); border-left: 2px solid var(--gold); opacity: 0.4; }
+    .corner-br { bottom: 8px; right: 8px; border-bottom: 2px solid var(--gold); border-right: 2px solid var(--gold); opacity: 0.4; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--bark);
+      border-top: 2px solid rgba(201,146,42,0.3);
+      text-align: center;
+      padding: 2rem 1rem;
+      font-family: 'Cinzel', serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: rgba(184,168,128,0.5);
+      text-transform: uppercase;
+    }
+    footer span { color: var(--blood); }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--dark); }
+    ::-webkit-scrollbar-thumb { background: var(--blood); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--ember); }
+
+    @media (max-width: 600px) {
+      .section-inner { padding: 1.5rem 1.2rem; }
+      .context-block { padding: 1.5rem 1.2rem; }
+      nav ul li a { padding: 0.7rem 0.8rem; font-size: 0.65rem; }
+      .block-title { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="header-glow"></div>
+  <div class="header-inner">
+    <p class="clan-name">Clan Jabalí</p>
+    <div class="ornament-divider"><span class="ornament-sym">☽ ✦ ☾</span></div>
+    <h1 class="page-title">Informe de Retroalimentación</h1>
+    <div class="ornament-divider"><span class="ornament-sym">⚔ ✦ ⚔</span></div>
+    <p class="page-subtitle">Bitácora Web &nbsp;·&nbsp; Evaluación de Monilinks</p>
+  </div>
+</header>
+
+<!-- ══ NAV ══ -->
+<nav>
+  <ul>
+    <li><a href="#quien">📍 ¿Quién?</a></li>
+    <li><a href="#bueno">✅ Lo Bueno</a></li>
+    <li><a href="#malo">❌ Lo Malo</a></li>
+    <li><a href="#inesperado">⚡ Lo Inesperado</a></li>
+    <li><a href="#mejorar">🔧 Mejoras</a></li>
+    <li><a href="/index.html">🏠 Inicio</a></li>
+  </ul>
+</nav>
+
+<!-- ══ MAIN ══ -->
+<main>
+
+  <!-- ¿Quién, qué, dónde? -->
+  <div class="context-block reveal" id="quien">
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+    <div class="block-header">
+      <div class="block-icon">🗺️</div>
+      <h2 class="block-title">¿Quién, qué, dónde?</h2>
+    </div>
+    <ul class="context-list">
+      <li>
+        <span class="li-bullet">📍</span>
+        <span>El primer piso de la biblioteca de la universidad de La Sabana y en lugares externos a esta.</span>
+      </li>
+      <li>
+        <span class="li-bullet">👤</span>
+        <span>Estudiantes que presentan dificultades para hacer amigos y personas que no se perciben como introvertidas.</span>
+      </li>
+      <li>
+        <span class="li-bullet">🔍</span>
+        <span>El sistema de incentivos de la plataforma, como se muestra la interfaz en distintos tipos de dispositivos, la intención y propósito del sistema, los medios por los cuales se hará visible el sistema y la percepción del sistema para distintos perfiles de estudiantes en la universidad.</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ✅ Lo bueno -->
+  <div class="feedback-section good reveal" id="bueno">
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+    <div class="section-inner">
+      <div class="section-header">
+        <span class="section-icon-big">✅</span>
+        <div>
+          <p class="section-label">Fortalezas detectadas</p>
+          <h2 class="section-question">¿Lo bueno?</h2>
+        </div>
+      </div>
+      <ul class="feedback-list">
+        <li>
+          <span class="li-bullet">🌿</span>
+          <span>Apreciaron que se diera una herramienta que permitiera contactar con otros estudiantes dentro de la institución.</span>
+        </li>
+        <li>
+          <span class="li-bullet">🌿</span>
+          <span>Les emocionó tanto a los estudiantes introvertidos como los que no se perciben así, ya que esta es una herramienta que si la aplica la universidad sería de gran utilidad para la comunidad.</span>
+        </li>
+        <li>
+          <span class="li-bullet">🌿</span>
+          <span>Les convenció que el sistema da una solución a una problemática que quizás no es tan visible a simple vista.</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ❌ Lo malo -->
+  <div class="feedback-section bad reveal" id="malo">
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+    <div class="section-inner">
+      <div class="section-header">
+        <span class="section-icon-big">❌</span>
+        <div>
+          <p class="section-label">Áreas de oportunidad</p>
+          <h2 class="section-question">¿Lo malo?</h2>
+        </div>
+      </div>
+      <ul class="feedback-list">
+        <li>
+          <span class="li-bullet">⚠️</span>
+          <span>El prototipo falló a la hora de verse en dispositivos móviles, ya que no mostraba el apartado de foros y la visualización no era completa.</span>
+        </li>
+        <li>
+          <span class="li-bullet">⚠️</span>
+          <span>Comentaron que se debería mejorar la estética de la plataforma, pues resultaba genérica para ellos.</span>
+        </li>
+        <li>
+          <span class="li-bullet">⚠️</span>
+          <span>Comentaron que puede ser complicado encontrar el sistema entre tantas funcionalidades de la app Unisabana.</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ⚡ Lo inesperado -->
+  <div class="feedback-section unexp reveal" id="inesperado">
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+    <div class="section-inner">
+      <div class="section-header">
+        <span class="section-icon-big">⚡</span>
+        <div>
+          <p class="section-label">Hallazgos sorpresa</p>
+          <h2 class="section-question">¿Lo inesperado?</h2>
+        </div>
+      </div>
+      <ul class="feedback-list">
+        <li>
+          <span class="li-bullet">💡</span>
+          <span>Muchas personas comentaron que sería interesante que el sistema de puntos integre un sistema de recompensas propio del sistema.</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 🔧 ¿Cómo mejorar? -->
+  <div class="feedback-section improve reveal" id="mejorar">
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+    <div class="section-inner">
+      <div class="section-header">
+        <span class="section-icon-big">🔧</span>
+        <div>
+          <p class="section-label">Plan de acción</p>
+          <h2 class="section-question">¿Cómo mejorar el proyecto?</h2>
+        </div>
+      </div>
+      <ul class="feedback-list">
+        <li>
+          <span class="li-bullet">🛠️</span>
+          <span>Mejorar la visualización del apartado de la app en dispositivos móviles.</span>
+        </li>
+        <li>
+          <span class="li-bullet">🛠️</span>
+          <span>Crear una forma de promoción para la Monilinks dentro de la app Unisabana.</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <p>⚔ &nbsp; Clan Jabalí &nbsp; — &nbsp; Bitácora Web &nbsp; <span>✦</span> &nbsp; Informe de Retroalimentación &nbsp; <span>✦</span> &nbsp; Monilinks &nbsp; ⚔</p>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 100);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Ember particles
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;';
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+  const embers = Array.from({length: 18}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height + canvas.height,
+    vx: (Math.random() - 0.5) * 0.5,
+    vy: -(Math.random() * 0.8 + 0.3),
+    size: Math.random() * 2.5 + 0.5,
+    life: Math.random(),
+    maxLife: Math.random() * 0.6 + 0.4,
+  }));
+
+  function drawEmbers() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    embers.forEach(e => {
+      e.x += e.vx; e.y += e.vy; e.life += 0.004;
+      if (e.life > e.maxLife || e.y < -10) {
+        e.x = Math.random() * canvas.width;
+        e.y = canvas.height + 5;
+        e.life = 0;
+      }
+      const alpha = Math.sin((e.life / e.maxLife) * Math.PI) * 0.55;
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, e.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(200, 80, 26, ${alpha})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(drawEmbers);
+  }
+  drawEmbers();
+</script>
+</body>
+</html>
